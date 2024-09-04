@@ -1,39 +1,51 @@
 package components
 
-templ Index(mapboxAccessToken string) {
+import (
+	"parkpilot/api"
+)
+
+templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
 	@DocType()
 	@Head("National Parks Pilot")
-	@Body(pageIndex(mapboxAccessToken))
+	@Body(pageIndex(mapboxAccessToken, parks, placeName, state))
 }
 
-templ pageIndex(mapboxAccessToken string) {
+templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
 	<div class="flex flex-col items-center mx-auto">
-		<h1 class="text-4xl font-bold pt-12 mb-8">Park Pilot</h1>
+		<h1 class="text-4xl font-extrabold text-stone-700 pt-12 mb-8">Park Pilot</h1>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString( mapboxAccessToken) }>
 		<div id="geocoder" class="geocoder mb-8"></div>
 	</div>
 	<div id="parks-container" class="text-center">
-		<span class="font-bold text-stone-400">Please select your starting point!</span>	
+		@Parks(parks, placeName, state)	
 	</div>
 
 	<script>
+	initMapbox();
+	function initMapbox() {
 		const mapboxTokenInput = document.getElementById('mapboxToken');
 		mapboxgl.accessToken = JSON.parse(mapboxTokenInput.value);
-		var geocoder = new MapboxGeocoder({
+		let geocoderElement = document.getElementById('geocoder');
+		geocoderElement.innerHTML = '';
+		let geocoder = new MapboxGeocoder({
 			accessToken: mapboxgl.accessToken,
 			mapboxgl: mapboxgl,
-			country: 'us',
+			countries: 'us',
 			types: 'place',
 		});
-		document.getElementById('geocoder').appendChild(geocoder.onAdd());
+		geocoderElement.appendChild(geocoder.onAdd());
 		geocoder.on('result', function(e) {
-			var coords = e.result.geometry.coordinates;
-			var placeName = e.result.place_name;
+			let coords = e.result.geometry.coordinates;
+			let placeNameParts = e.result.place_name.split(',');
+			let placeName = placeNameParts[0];
+			let state = placeNameParts[1].trim();
+			let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
 			// Use HTMX to send coordinates to the server and get parks
-			htmx.ajax('POST', '/fetch-parks', {
-				values: {longitude: coords[0], latitude: coords[1], placeName: placeName},
-				target: '#parks-container',
+			htmx.ajax('GET', url, {
+				values: {longitude: coords[0], latitude: coords[1]},
+				target: '.htmx-body',
 			});
 		});
+	}
 	</script>
 }
