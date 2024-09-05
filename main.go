@@ -177,7 +177,7 @@ func main() {
 					ParkRecordId: parkRecord.Id,
 					ParkCode:     parkCode,
 				}
-				return template.Html(c, components.Campgrounds(park, campgrounds))
+				return template.Html(c, components.Campgrounds(park, campgrounds, mapboxAccessToken))
 			} else {
 				// redirect to home page if park not found
 				return c.Redirect(http.StatusFound, "/")
@@ -200,7 +200,7 @@ func main() {
 				campground.FirstComeFirstServe = campgroundRecord.GetString("firstComeFirstServe")
 				campground.Reservable = campgroundRecord.GetString("reservable")
 				campground.ReservationInfo = campgroundRecord.GetString("reservationInfo")
-				campground.ReservationURL = campgroundRecord.GetString("reservationURL")
+				campground.ReservationURL = campgroundRecord.GetString("reservationUrl")
 				campground.DirectionsOverview = campgroundRecord.GetString("directionsOverview")
 				campground.Images = campgroundRecord.GetStringSlice("images")
 				campground.WeatherOverview = campgroundRecord.GetString("weatherOverview")
@@ -210,7 +210,8 @@ func main() {
 				}
 				campground.ParkCode = park.GetString("parkCode")
 				parkName := park.GetString("name")
-				return template.Html(c, components.Campground(campground, parkName))
+				Id := campgroundRecord.Id
+				return template.Html(c, components.Campground(campground, parkName, Id))
 			}
 			return template.Html(c, components.Error(404, "Campground not found"))
 		})
