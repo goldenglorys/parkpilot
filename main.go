@@ -44,6 +44,12 @@ func main() {
 		log.Fatal("OWM_API_KEY environment variable is not set")
 	}
 
+	app.OnBeforeApiError().Add(func(e *core.ApiErrorEvent) error {
+		log.Println("API Error:", e.Error)
+		// send error code and message to error template
+		return template.Html(e.HttpContext, components.Error(404, e.Error.Error()))
+	})
+
 	// serves static files from the provided public dir (if exists)
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		template.NewTemplateRenderer(e.Router)
@@ -121,7 +127,8 @@ func main() {
 					parkPlaceRecord = tmp[0]
 					if parkPlaceRecord != nil {
 						park.DriveTime = parkPlaceRecord.GetString("driveTime")
-						park.DrivingDistance = parkPlaceRecord.GetString("drivingDistance")
+						park.DrivingDistanceMi = parkPlaceRecord.GetString("drivingDistanceMi")
+						park.DrivingDistanceKm = parkPlaceRecord.GetString("drivingDistanceKm")
 					}
 					if placeRecord != nil {
 						placeName = placeRecord.GetString("placeName")
@@ -205,7 +212,8 @@ func main() {
 					park.Latitude = parkRecord.GetString("latitude")
 					park.ParkRecordId = parkRecord.Id
 					park.DriveTime = placePark.GetString("driveTime")
-					park.DrivingDistance = placePark.GetString("drivingDistance")
+					park.DrivingDistanceMi = placePark.GetString("drivingDistanceMi")
+					park.DrivingDistanceKm = placePark.GetString("drivingDistanceKm")
 					park.ParkCode = parkRecord.GetString("parkCode")
 					parks = append(parks, park)
 				}
@@ -269,7 +277,8 @@ func main() {
 					placePark := models.NewRecord(placeParks)
 					placePark.Set("place", placeRecord.Id)
 					placePark.Set("park", park.ParkRecordId)
-					placePark.Set("drivingDistance", park.DrivingDistance)
+					placePark.Set("drivingDistanceMi", park.DrivingDistanceMi)
+					placePark.Set("drivingDistanceKm", park.DrivingDistanceKm)
 					placePark.Set("driveTime", park.DriveTime)
 					if err := app.Dao().SaveRecord(placePark); err != nil {
 						return err
@@ -318,7 +327,7 @@ func main() {
 			}
 			// sort placeParks by driving distance
 			sort.Slice(placeParks, func(i, j int) bool {
-				return placeParks[i].GetFloat("drivingDistance") < placeParks[j].GetFloat("drivingDistance")
+				return placeParks[i].GetFloat("drivingDistanceKm") < placeParks[j].GetFloat("drivingDistanceKm")
 			})
 			// get the next 4 closest parks
 			if len(placeParks) >= currentCount+4 {
@@ -328,7 +337,8 @@ func main() {
 					// if park is not in placeParks slice, remove it
 					for _, park := range parks {
 						if park.ParkRecordId == placePark.GetStringSlice("park")[0] {
-							park.DrivingDistance = placePark.GetString("drivingDistance")
+							park.DrivingDistanceMi = placePark.GetString("drivingDistanceMi")
+							park.DrivingDistanceKm = placePark.GetString("drivingDistanceKm")
 							park.DriveTime = placePark.GetString("driveTime")
 							newParks = append(newParks, park)
 						}
@@ -364,7 +374,8 @@ func main() {
 					placePark := models.NewRecord(placeParks)
 					placePark.Set("place", placeRecord.Id)
 					placePark.Set("park", park.ParkRecordId)
-					placePark.Set("drivingDistance", park.DrivingDistance)
+					placePark.Set("drivingDistanceMi", park.DrivingDistanceMi)
+					placePark.Set("drivingDistanceKm", park.DrivingDistanceKm)
 					placePark.Set("driveTime", park.DriveTime)
 					if err := app.Dao().SaveRecord(placePark); err != nil {
 						return err
