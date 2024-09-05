@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -98,7 +99,7 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 		return err
 	}
 	// get the Pocketbase collection for National Parks
-	collection, err := app.Dao().FindCollectionByNameOrId("nationalParks")
+	collection, err := app.Dao().FindCollectionByNameOrId("parks")
 	if err != nil {
 		return err
 	}
@@ -106,7 +107,7 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 	for _, park := range data.Data {
 		if park.Designation == "National Park" || park.Designation == "National Park & Preserve" {
 			var record *models.Record
-			existingRecord, err := app.Dao().FindFirstRecordByData("nationalParks", "parkCode", park.ParkCode)
+			existingRecord, err := app.Dao().FindFirstRecordByData("parks", "parkCode", park.ParkCode)
 			if err == nil {
 				record = existingRecord
 			} else {
@@ -213,6 +214,8 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 			record = models.NewRecord(campgrounds)
 		}
 		form := forms.NewRecordUpsert(app, record)
+		reservable, _ := strconv.Atoi(campground.Reservable)
+		firstComeFirstServe, _ := strconv.Atoi(campground.FirstComeFirstServe)
 		form.LoadData(map[string]any{
 			"name":                campground.Name,
 			"parkId":              parkId,
@@ -223,8 +226,8 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 			"reservationUrl":      campground.ReservationURL,
 			"directionsOverview":  campground.DirectionsOverview,
 			"weatherOverview":     campground.WeatherOverview,
-			"reservable":          campground.Reservable,
-			"firstComeFirstServe": campground.FirstComeFirstServe,
+			"reservable":          reservable,
+			"firstComeFirstServe": firstComeFirstServe,
 		})
 		form.RemoveFiles("images")
 		// fetch images for each campground
@@ -296,7 +299,7 @@ func downloadAndResizeImage(url string, maxWidth int) ([]byte, error) {
 // FetchAndStoreWeather fetches weather data for each national park and stores it in the record.
 func FetchAndStoreWeather(app *pocketbase.PocketBase) error {
 	// get all national parks
-	parks, err := app.Dao().FindRecordsByExpr("nationalParks", nil)
+	parks, err := app.Dao().FindRecordsByExpr("parks", nil)
 	if err != nil {
 		return err
 	}
@@ -497,7 +500,7 @@ func FetchAlerts(app *pocketbase.PocketBase) error {
 		}
 	}
 	// get all national parks
-	parks, err := app.Dao().FindRecordsByExpr("nationalParks", nil)
+	parks, err := app.Dao().FindRecordsByExpr("parks", nil)
 	if err != nil {
 		return err
 	}

@@ -63,7 +63,8 @@ templ ParkInfo(park api.Park, placeName string, alerts []api.Alert) {
 				</button>
 			</div>
 			<button onclick="history.back()" class="my-auto hidden md:block" id="backBtn">
-				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class=" fill-lime-700 shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100">					<title>Back</title>
+				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class=" fill-lime-700 shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100">
+					<title>Back</title>
 					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 					<g id="SVGRepo_iconCarrier"><path d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z"></path> </g>
@@ -74,7 +75,8 @@ templ ParkInfo(park api.Park, placeName string, alerts []api.Alert) {
 				<span class="text-xl text-center self-end mb-0.5 text-stone-400 font-bold">{ park.States }</span>
 			</div>
 			<button onclick="share();" class="my-auto hidden md:block">
-				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class=" fill-none shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100">					<title>Share</title>
+				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class=" fill-none shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100">
+					<title>Share</title>
 					<g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M9 12C9 13.3807 7.88071 14.5 6.5 14.5C5.11929 14.5 4 13.3807 4 12C4 10.6193 5.11929 9.5 6.5 9.5C7.88071 9.5 9 10.6193 9 12Z" stroke="#15803d" stroke-width="1.5"></path> <path d="M14 6.5L9 10" stroke="#15803d" stroke-width="1.5" stroke-linecap="round"></path> <path d="M14 17.5L9 14" stroke="#15803d" stroke-width="1.5" stroke-linecap="round"></path> <path d="M19 18.5C19 19.8807 17.8807 21 16.5 21C15.1193 21 14 19.8807 14 18.5C14 17.1193 15.1193 16 16.5 16C17.8807 16 19 17.1193 19 18.5Z" stroke="#15803d" stroke-width="1.5"></path> <path d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z" stroke="#15803d" stroke-width="1.5"></path> </g>
 				</svg>
 			</button>
@@ -132,7 +134,7 @@ templ ParkInfo(park api.Park, placeName string, alerts []api.Alert) {
 	</div>
 	<span class="text-stone-400 text-xs text-center w-full block font-bold mb-8">last updated: { lastUpdated(park.Weather[0].LastUpdated) }</span>
 	if placeName != "" {
-		<div id="directions" class="group bg-lime-700 text-white font-mono font-extrabold text-sm max-w-3xl mx-auto md:rounded-2xl px-8 py-6 mb-8 relative">
+		<div id="directions" class="group bg-lime-700 text-white font-mono font-extrabold text-sm max-w-3xl mx-auto md:rounded-2xl px-8 py-6 mb-4 relative">
 			<div class="flex flex-col md:flex-row justify-between w-full items-center">
 				<div class="text-center font-bold md:text-lg">
 					<span>{ strings.Split(placeName, ",")[0] + ", " + strings.Split(placeName, ",")[1] }</span>
@@ -167,28 +169,32 @@ templ ParkInfo(park api.Park, placeName string, alerts []api.Alert) {
 			</button>
 		</div>
 	}
+	if park.Campgrounds > 0 {
+		<a
+			href={ templ.SafeURL(fmt.Sprintf("/campgrounds/%s", park.ParkCode)) }
+			class="block w-72 mx-auto mb-8 py-2 px-4 text-lg text-center font-bold text-white bg-lime-700 rounded-2xl hover:bg-lime-800 cursor-pointer"
+		>
+			View Campgrounds
+		</a>
+	}
 	<div id="description" class="text-center text-stone-700 text-lg max-w-4xl mx-4 md:mx-auto mb-8">
 		{ park.DirectionsInfo }
 	</div>
-	if park.Campgrounds > 0 {
-		<a 	href={ templ.SafeURL(fmt.Sprintf("/campgrounds/%s", park.ParkCode)) }
-			class="block w-72 mx-auto mb-8 py-2 px-4 text-lg text-center font-bold text-white bg-lime-700 rounded-2xl hover:bg-lime-800 cursor-pointer">
-			View Campgrounds
-	</a>
-	}
 	if len(alerts) > 0 {
 		<div class="flex flex-col items-center gap-4 mb-24">
-			<span class="text-stone-600 font-bold text-2xl">Alerts</span>
+			<span class="text-white bg-red-900 px-4 py-1 font-bold text-2xl rounded">Alerts</span>
 			<div class="max-w-3xl mx-auto">
 				for _, alert := range alerts {
-					<div class={"p-4 rounded-2xl mb-4 relative group", 
+					<div
+						class={ "p-4 rounded-2xl mb-4 relative group", 
 								templ.KV("bg-red-100 text-red-800", alert.Category == "Danger" || alert.Category == "Park Closure"),
 								templ.KV("bg-amber-100 text-amber-800", alert.Category == "Caution"),
 								templ.KV("bg-green-100 text-green-800", alert.Category == "Information"),
-								templ.KV("bg-fuchsia-100 text-fuchsia-800", alert.Category != "Information" && alert.Category != "Caution" && alert.Category != "Danger" && alert.Category != "Park Closure")}>
-						<p class="text-lg">{strings.ToUpper(alert.Category)}</p>
-						<p class="font-bold text-base">{alert.Title}</p>
-						<p class="text-sm mb-4">{alert.Description}</p>
+								templ.KV("bg-fuchsia-100 text-fuchsia-800", alert.Category != "Information" && alert.Category != "Caution" && alert.Category != "Danger" && alert.Category != "Park Closure") }
+					>
+						<p class="text-lg">{ strings.ToUpper(alert.Category) }</p>
+						<p class="font-bold text-base">{ alert.Title }</p>
+						<p class="text-sm mb-4">{ alert.Description }</p>
 						if alert.Url != "" {
 							<a href={ templ.SafeURL(fmt.Sprintf(alert.Url)) } class="font-bold text-sm absolute right-4 bottom-4 group-hover:underline">more</a>
 						}

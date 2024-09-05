@@ -51,6 +51,7 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 			countries: 'us',
 			types: 'place',
 			placeholder: 'Where are you?',
+			language: 'en-US',
 		});
 		geocoderElement.appendChild(geocoder.onAdd());
 		geocoder.on('result', function(e) {
@@ -101,7 +102,7 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 	// update the currentCount in load more button
 	document.addEventListener('htmx:configRequest', function(event) {
 		let currentCount = document.querySelectorAll('#parks .park-card').length;
-		if (typeof currentCount !== 'undefined') {
+		if (typeof currentCount !== 'undefined' && window.location.pathname.startsWith('/place/')) {
 			if (currentCount >= 32 || currentCount == 0) {
 				// hide the button
 				document.getElementById('load-more-parks').style.display = 'none';

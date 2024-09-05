@@ -158,6 +158,7 @@ func main() {
 					}
 					campground.Latitude = campgroundRecord.GetString("latitude")
 					campground.Longitude = campgroundRecord.GetString("longitude")
+					campground.FirstComeFirstServe = campgroundRecord.GetString("firstComeFirstServe")
 					campgrounds = append(campgrounds, campground)
 				}
 				park := api.Park{
