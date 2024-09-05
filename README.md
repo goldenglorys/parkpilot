@@ -10,7 +10,7 @@
 ### Data Sources and Integration
 - [National Park Service](https://www.nps.gov/subjects/developer/api-documentation.htm) - park details and information
 - [OpenWeathermap](https://openweathermap.org/api) - real-time weather data
-- [Mapbos](https://www.mapbox.com/) - interactive maps for park exploration
+- [Mapbox](https://www.mapbox.com/) - interactive maps for park exploration
 
 To starts run
 ```
