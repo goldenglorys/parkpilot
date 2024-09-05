@@ -11,8 +11,8 @@ templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state 
 }
 
 templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
-	<div class="flex flex-col items-center mx-auto">
-		<h1 class="text-4xl font-extrabold text-stone-700 pt-12 mb-8">Park Pilot</h1>
+	<div class="flex flex-col items-center mx-auto text-center">
+		<h1 class="text-4xlmd:text-5xl font-extrabold text-stone-700 pt-12 mb-8">Park Pilot</h1>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString( mapboxAccessToken) }>
 		<div id="geocoder" class="geocoder mb-8"></div>
 	</div>
