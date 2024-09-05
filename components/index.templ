@@ -1,8 +1,6 @@
 package components
 
-import (
-	"parkpilot/api"
-)
+import "parkpilot/api"
 
 templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
 	@DocType()
@@ -12,14 +10,13 @@ templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state 
 
 templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
 	<div class="flex flex-col items-center mx-auto text-center">
-		<h1 class="text-4xlmd:text-5xl font-extrabold text-stone-700 pt-12 mb-8">Park Pilot</h1>
-		<input type="hidden" id="mapboxToken" value={ templ.JSONString( mapboxAccessToken) }>
+		<h1 class="text-4xlmd:text-5xl font-extrabold text-stone-700 pt-12 mb-8"><a href="/" hx-boost="false">Park Pilot</a></h1>
+		<input type="hidden" id="mapboxToken" value={ templ.JSONString(mapboxAccessToken) }/>
 		<div id="geocoder" class="geocoder mb-8"></div>
 	</div>
 	<div id="parks-container" class="text-center">
-		@Parks(parks, placeName, state)	
+		@Parks(parks, placeName, state)
 	</div>
-
 	<script>
 	initMapbox();
 	function initMapbox() {
@@ -32,6 +29,7 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 			mapboxgl: mapboxgl,
 			countries: 'us',
 			types: 'place',
+			placeholder: 'Where are you?',
 		});
 		geocoderElement.appendChild(geocoder.onAdd());
 		geocoder.on('result', function(e) {
@@ -45,6 +43,38 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 				values: {longitude: coords[0], latitude: coords[1]},
 				target: '.htmx-body',
 			});
+		});
+	}
+	window.onload = function() {
+		const mapboxTokenInput = document.getElementById('mapboxToken');
+		const mapAcessToken = JSON.parse(mapboxTokenInput.value);
+		// Check if Geolocation is supported
+		if (!navigator.geolocation) {
+			console.log("Geolocation is not supported by this browser.");
+			return;
+		} else if (window.location.pathname != '/') {
+			return;
+		}
+
+		// Get current position
+		navigator.geolocation.getCurrentPosition(function(position) {
+			let latitude = position.coords.latitude;
+			let longitude = position.coords.longitude;
+			// Use Mapbox Geocoding API to get place name
+			fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place&countries=us&access_token=${mapAcessToken}`)
+				.then(response => response.json())
+				.then(data => {
+					let placeNameParts = data.features[0].place_name.split(',');
+					let placeName = placeNameParts[0];
+					let state = placeNameParts[1].trim();
+					let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
+
+					// Use HTMX to send coordinates to the server and get parks
+					htmx.ajax('GET', url, {
+						values: {longitude: longitude, latitude: latitude},
+						target: '.htmx-body',
+					});
+				});
 		});
 	}
 	</script>

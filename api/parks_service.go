@@ -47,6 +47,7 @@ type WeatherDate struct {
 	TemperatureNightF string `json:"temperatureNightF"`
 	TemperatureNightC string `json:"temperatureNightC"`
 	WeatherIcon       string `json:"weatherIcon"`
+	LastUpdated       string `json:"lastUpdated"`
 }
 
 func FetchAndStoreNationalParks(app *pocketbase.PocketBase) echo.HandlerFunc {
@@ -147,13 +148,16 @@ func downloadAndResizeImage(url string, maxWidth uint) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	var resizedImage image.Image
 	// resize the image if it's wider than the maxWidth
 	if img.Bounds().Dx() > int(maxWidth) {
-		img = resize.Resize(maxWidth, 0, img, resize.Lanczos3)
+		resizedImage = resize.Resize(maxWidth, 0, img, resize.Lanczos3)
+	} else {
+		resizedImage = img
 	}
 	// encode the image back to a byte slice as JPEG
 	buf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, img, nil)
+	err = jpeg.Encode(buf, resizedImage, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -262,6 +266,7 @@ func parseWeatherData(apiUrl string) ([]WeatherDate, error) {
 			TemperatureNightF: nightF,
 			TemperatureNightC: nightC,
 			WeatherIcon:       iconURL,
+			LastUpdated:       time.Now().Format("16:42"),
 		})
 	}
 	return weatherDates, nil

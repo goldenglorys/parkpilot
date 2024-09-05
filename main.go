@@ -23,7 +23,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	app := pocketbase.New()
@@ -47,7 +47,7 @@ func main() {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		template.NewTemplateRenderer(e.Router)
 
-		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("./pb_public"), false))
+		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("/pb/pb_public"), false))
 
 		e.Router.GET("/", func(c echo.Context) error {
 			parks := []api.Park{}
@@ -69,14 +69,6 @@ func main() {
 				}
 			}
 			var parkPlaceRecord *models.Record // Define outside to check later
-			// Proceed only if placeRecord is found
-			if placeRecord != nil {
-				var err error
-				parkPlaceRecord, err = app.Dao().FindFirstRecordByData("placeParks", "place", placeRecord.Id)
-				if err != nil {
-					return c.JSON(http.StatusBadRequest, map[string]string{"error": "Park not found"})
-				}
-			}
 			// regardless of queryParams, proceed to fetch park data
 			parkRecord, err := app.Dao().FindFirstRecordByData("parks", "parkCode", parkCode)
 			if err != nil {
