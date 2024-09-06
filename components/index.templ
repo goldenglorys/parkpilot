@@ -14,14 +14,13 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 		<a href="/" hx-boost="false" class="block">
 			<div class="flex flex-col items-center justify-center mx-3 gap-4 md:mb-8 mb-4">
 				<img src="/logo.webp" alt="Pick A Park Logo" class="w-36 h-36"/>
-				<h1 class="dark:text-amber-100 text-4xl md:text-5xl font-extrabold text-stone-700">Park Pilot</h1>
+				<h1 id="main-title" class="dark:text-amber-100 text-4xl md:text-5xl font-extrabold text-stone-700">Park Pilot</h1>
 			</div>
 		</a>
 		<div class="geocoder rounded bg-stone-100">
 			<div id="geocoder"></div>
 		</div>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString(mapboxAccessToken) }/>
-		<div id="geocoder" class="geocoder mb-8"></div>
 	</div>
 	<div id="parks-container" class="text-center">
 		@Parks(parks, placeName, state)
@@ -50,30 +49,30 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 		} else if (window.location.pathname != '/') {
 			return;
 		}
-	});
 
-	// Get current position
-	navigator.geolocation.getCurrentPosition(function(position) {
-		const mapboxTokenInput = document.getElementById('mapboxToken');
-		const mapAcessToken = JSON.parse(mapboxTokenInput.value);
-		let latitude = position.coords.latitude;
-		let longitude = position.coords.longitude;
+		// Get current position
+		navigator.geolocation.getCurrentPosition(function(position) {
+			const mapboxTokenInput = document.getElementById('mapboxToken');
+			const mapAcessToken = JSON.parse(mapboxTokenInput.value);
+			let latitude = position.coords.latitude;
+			let longitude = position.coords.longitude;
 
-		// Use Mapbox Geocoding API to get place name
-		fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place&countries=us&access_token=${mapAcessToken}`)
-			.then(response => response.json())
-			.then(data => {
-				let placeNameParts = data.features[0].place_name.split(',');
-				let placeName = placeNameParts[0];
-				let state = placeNameParts[1].trim();
-				let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
+			// Use Mapbox Geocoding API to get place name
+			fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place&countries=us&access_token=${mapAcessToken}`)
+				.then(response => response.json())
+				.then(data => {
+					let placeNameParts = data.features[0].place_name.split(',');
+					let placeName = placeNameParts[0];
+					let state = placeNameParts[1].trim();
+					let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
 
-				// Use HTMX to send coordinates to the server and get parks
-				htmx.ajax('GET', url, {
-					values: {longitude: longitude, latitude: latitude},
-					target: '.htmx-body',
+					// Use HTMX to send coordinates to the server and get parks
+					htmx.ajax('GET', url, {
+						values: {longitude: longitude, latitude: latitude},
+						target: '.htmx-body',
+					});
 				});
-			});
+		});
 	})();
 	(function() {
 		// Function to load CSS dynamically
@@ -125,16 +124,16 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 
 		function initMapbox() {
 			if (typeof MapboxGeocoder === 'undefined') {
-				loadCSS('/mapbox-gl-geocoder.css');
-				loadJS('/mapbox-gl-geocoder.min.js', initMapboxGeocoder);
+				loadCSS('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css');
+				loadJS('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js', initMapboxGeocoder);
 			} else {
 				initMapboxGeocoder();
 			}
 		}
 
 		if (typeof mapboxgl === 'undefined') {
-			loadCSS('/mapbox-gl.css');
-			loadJS('/mapbox-gl.js', initMapbox);
+			loadCSS('https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css');
+			loadJS('https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js', initMapbox);
 		} else {
 			initMapbox();
 		}
