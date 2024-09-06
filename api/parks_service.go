@@ -15,6 +15,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/labstack/echo/v5"
@@ -81,7 +82,22 @@ type Alert struct {
 	Url         string `json:"url"`
 }
 
+var isRunning bool
+var mu sync.Mutex
+
 func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
+	// prevent multiple fetches from running at the same time
+	mu.Lock()
+	defer mu.Unlock()
+
+	if isRunning {
+		log.Printf("National Parks data is already being fetched.")
+		return nil
+	}
+	isRunning = true
+	defer func() {
+		isRunning = false
+	}()
 	// fetch data from NPS API
 	NPS_API_KEY := os.Getenv("NPS_API_KEY")
 	var NPS_API_URL = "https://developer.nps.gov/api/v1/parks?limit=500&api_key=" + NPS_API_KEY
@@ -152,7 +168,7 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 					continue
 				}
 				resizedImageBytes = nil // free up memory
-				log.Printf("Image size: %f kb", float64(tmpFile.Size)/1024.0)
+				log.Printf("Adding img to park %s: %f kb", park.ParkCode, float64(tmpFile.Size)/1024.0)
 				// add the image to the form
 				form.AddFiles("images", tmpFile)
 				tmpFile = nil // free up memory
@@ -161,7 +177,7 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 					continue
 				}
 			}
-			log.Printf("Park %s has %d images", record.Id, len(record.GetStringSlice("images")))
+			log.Printf("Park %s has %d images", park.ParkCode, len(record.GetStringSlice("images")))
 			campCount, err := fetchCampgrounds(app, record.Id, park.ParkCode)
 			if err != nil {
 				log.Printf("Error fetching campgrounds: %v", err)
@@ -215,7 +231,7 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 		if err == nil {
 			record = existingCampground
 		} else {
-			log.Printf("Creating new record for campground %s, err: %v", campground.Id, err)
+			log.Printf("Creating new record for campground %s", campground.Id)
 			record = models.NewRecord(campgrounds)
 		}
 		form := forms.NewRecordUpsert(app, record)
@@ -271,7 +287,8 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 		log.Printf("Camp %s has %d images", record.Id, len(record.GetStringSlice("images")))
 		if record.GetString("mapImage") == "" {
 			// get map image from mapbox
-			imageBytes, err := getMapImage(campground.Latitude, campground.Longitude)
+			firstCome := campground.FirstComeFirstServe != "0"
+			imageBytes, err := getMapImage(campground.Latitude, campground.Longitude, firstCome)
 			if err != nil {
 				log.Printf("Error getting map image: %v", err)
 				continue
@@ -293,10 +310,15 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 	return len(data.Data), err
 }
 
-func getMapImage(lat, lon string) ([]byte, error) {
+func getMapImage(lat, lon string, firstCome bool) ([]byte, error) {
 	mapboxAPIKey := os.Getenv("MAPBOX_ACCESS_TOKEN")
-	// get map image for the campground
-	mapImageURL := fmt.Sprintf("https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/pin-l+e85151(%s,%s)/%s,%s,15.2,0/768x384@2x?access_token=%s", lon, lat, lon, lat, mapboxAPIKey)
+	// get map image for the campground (color in url based on whether it's first come first serve)
+	var mapImageURL string
+	if firstCome {
+		mapImageURL = fmt.Sprintf("https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/pin-l+65a30d(%s,%s)/%s,%s,15.2,0/768x384@2x?access_token=%s", lon, lat, lon, lat, mapboxAPIKey)
+	} else {
+		mapImageURL = fmt.Sprintf("https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/pin-l+e85151(%s,%s)/%s,%s,15.2,0/768x384@2x?access_token=%s", lon, lat, lon, lat, mapboxAPIKey)
+	}
 	resp, err := http.Get(mapImageURL)
 	if err != nil {
 		log.Printf("Error fetching map image: %v", err)
@@ -467,11 +489,13 @@ func kelvinToCelsius(k float64) string {
 }
 
 func FetchAndStoreWeatherHTTP(app *pocketbase.PocketBase) echo.HandlerFunc {
+	log.Printf("=============== FETCHING WEATHER DATA ===============")
 	return func(c echo.Context) error {
 		err := FetchAndStoreWeather(app)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
+		log.Printf("============= Weather data has been stored successfully. ==============")
 		return c.String(http.StatusOK, "Weather data has been stored successfully.")
 	}
 }
@@ -590,10 +614,12 @@ func FetchAlerts(app *pocketbase.PocketBase) error {
 
 func FetchAlertsHTTP(app *pocketbase.PocketBase) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Printf("=============== FETCHING ALERTS DATA ===============")
 		err := FetchAlerts(app)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
+		log.Printf("============= Alerts data has been stored successfully. ==============")
 		return c.String(http.StatusOK, "Alerts data has been stored successfully.")
 	}
 }
