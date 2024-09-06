@@ -136,7 +136,6 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 				// check if the image is already in the form
 				for _, existingImage := range current_images {
 					if inflector.Snakecase(quick_strip_url(imageURL)) == quick_strip(existingImage) {
-						log.Print("skipped")
 						continue ImageLoop
 					}
 				}
@@ -162,6 +161,7 @@ func FetchAndStoreNationalParks(app *pocketbase.PocketBase) error {
 					continue
 				}
 			}
+			log.Printf("Park %s has %d images", record.Id, len(record.GetStringSlice("images")))
 			campCount, err := fetchCampgrounds(app, record.Id, park.ParkCode)
 			if err != nil {
 				log.Printf("Error fetching campgrounds: %v", err)
@@ -243,7 +243,6 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 			// check if the image is already in the form
 			for _, existingImage := range current_images {
 				if inflector.Snakecase(quick_strip_url(imageURL)) == quick_strip(existingImage) {
-					log.Print("skipped camp image")
 					continue ImageLoop
 				}
 			}
@@ -269,6 +268,7 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 				continue
 			}
 		}
+		log.Printf("Camp %s has %d images", record.Id, len(record.GetStringSlice("images")))
 		if record.GetString("mapImage") == "" {
 			// get map image from mapbox
 			imageBytes, err := getMapImage(campground.Latitude, campground.Longitude)
@@ -288,8 +288,6 @@ func fetchCampgrounds(app *pocketbase.PocketBase, parkId string, parkCode string
 				continue
 			}
 			imageBytes, tmpfile = nil, nil // free up memory
-		} else {
-			log.Printf("Campground map image already exists")
 		}
 	}
 	return len(data.Data), err

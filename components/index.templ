@@ -10,14 +10,16 @@ templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state 
 }
 
 templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
-	<div class="flex flex-col items-center mx-auto text-center pt-12 mb-8">
+	<div class="flex flex-col items-center mx-auto text-center pt-12 md:mb-8 mb-4">
 		<a href="/" hx-boost="false" class="block">
-			<div class="flex flex-col items-center justify-center mx-3 gap-4 mb-8">
+			<div class="flex flex-col items-center justify-center mx-3 gap-4 md:mb-8 mb-4">
 				<img src="/logo.webp" alt="Pick A Park Logo" class="w-36 h-36"/>
 				<h1 class="dark:text-amber-100 text-4xl md:text-5xl font-extrabold text-stone-700">Park Pilot</h1>
 			</div>
 		</a>
-		<div id="geocoder" class="geocoder rounded bg-stone-100"></div>
+		<div class="geocoder rounded bg-stone-100">
+			<div id="geocoder"></div>
+		</div>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString(mapboxAccessToken) }/>
 		<div id="geocoder" class="geocoder mb-8"></div>
 	</div>
@@ -39,6 +41,40 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 		<p class="dark:text-white text-xs mb-4 text-center mx-8"><sup class="dark:text-lime-400 text-base text-lime-800">*</sup> Parks are sorted by as-the-crow-flies distance from your location, and thus may not be sorted by driving distance.</p>
 	}
 	<script>
+	(function() {
+		// Check if Geolocation is supported
+		if (!navigator.geolocation) {
+			console.log("Geolocation is not supported by this browser.");
+			return;
+			// else if path != /
+		} else if (window.location.pathname != '/') {
+			return;
+		}
+	});
+
+	// Get current position
+	navigator.geolocation.getCurrentPosition(function(position) {
+		const mapboxTokenInput = document.getElementById('mapboxToken');
+		const mapAcessToken = JSON.parse(mapboxTokenInput.value);
+		let latitude = position.coords.latitude;
+		let longitude = position.coords.longitude;
+
+		// Use Mapbox Geocoding API to get place name
+		fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place&countries=us&access_token=${mapAcessToken}`)
+			.then(response => response.json())
+			.then(data => {
+				let placeNameParts = data.features[0].place_name.split(',');
+				let placeName = placeNameParts[0];
+				let state = placeNameParts[1].trim();
+				let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
+
+				// Use HTMX to send coordinates to the server and get parks
+				htmx.ajax('GET', url, {
+					values: {longitude: longitude, latitude: latitude},
+					target: '.htmx-body',
+				});
+			});
+	})();
 	(function() {
 		// Function to load CSS dynamically
 		function loadCSS(href) {
@@ -103,38 +139,6 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 			initMapbox();
 		}
 	})();
-	window.onload = function() {
-		const mapboxTokenInput = document.getElementById('mapboxToken');
-		const mapAcessToken = JSON.parse(mapboxTokenInput.value);
-		// Check if Geolocation is supported
-		if (!navigator.geolocation) {
-			console.log("Geolocation is not supported by this browser.");
-			return;
-		} else if (window.location.pathname != '/') {
-			return;
-		}
-
-		// Get current position
-		navigator.geolocation.getCurrentPosition(function(position) {
-			let latitude = position.coords.latitude;
-			let longitude = position.coords.longitude;
-			// Use Mapbox Geocoding API to get place name
-			fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place&countries=us&access_token=${mapAcessToken}`)
-				.then(response => response.json())
-				.then(data => {
-					let placeNameParts = data.features[0].place_name.split(',');
-					let placeName = placeNameParts[0];
-					let state = placeNameParts[1].trim();
-					let url = '/place/' + encodeURIComponent(placeName) + '/' + encodeURIComponent(state);
-
-					// Use HTMX to send coordinates to the server and get parks
-					htmx.ajax('GET', url, {
-						values: {longitude: longitude, latitude: latitude},
-						target: '.htmx-body',
-					});
-				});
-		});
-	}
 	// update the currentCount in load more button
 	document.addEventListener('htmx:configRequest', function(event) {
 		let currentCount = document.querySelectorAll('#parks .park-card').length;
