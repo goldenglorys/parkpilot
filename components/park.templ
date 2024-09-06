@@ -118,8 +118,8 @@ templ parkInfo(park api.Park, placeName string, alerts []api.Alert) {
 	</div>
 	<!-- weather data: Date, TemperatureDayF, TemperatureNightF, WeatherIcon -->
 	<span class="dark:text-amber-100 text-stone-700 font-bold text-sm w-full block text-center mb-3">Weather @ { trimParkName(park.FullName) }</span>
-	<div class="w-full overflow-x-auto hide-scrollbar px-2 lg:px-0 mb-3">
-		<div id="weather-data" class="flex flex-row gap-2 justify-center items-center w-full pb-2 pl-16 md:pl-0">
+	<div class="w-full overflow-x-auto hide-scrollbar lg:px-0 mb-3">
+		<div id="weather-data" class="flex flex-row gap-2 md:justify-center items-center pb-2 md:pl-0">
 			for _, date := range park.Weather {
 				<div class="flex flex-col items-center min-w-16">
 					<span class="dark:text-amber-50 text-sm text-stone-700">{ date.Date }</span>
@@ -142,9 +142,9 @@ templ parkInfo(park api.Park, placeName string, alerts []api.Alert) {
 	</div>
 	<span class="text-stone-500 text-xs text-center w-full block font-bold mb-8">last updated: { lastUpdated(park.Weather[0].LastUpdated) }</span>
 	if placeName != "" {
-		<div id="directions" class="group bg-lime-700 text-white font-mono font-extrabold text-sm max-w-3xl mx-auto md:rounded-2xl px-8 py-6 mb-4 relative overflow-hidden">
+		<div id="directions" class="group bg-lime-700 text-white font-mono max-w-3xl mx-auto md:rounded-2xl px-8 py-6 mb-4 relative overflow-hidden">
 			<div class="flex flex-col md:flex-row justify-between w-full items-center">
-				<div class="text-center font-bold md:text-lg">
+				<div class="text-center md:text-lg">
 					<span>{ strings.Split(placeName, ",")[0] + ", " + strings.Split(placeName, ",")[1] }</span>
 				</div>
 				<a href={ templ.SafeURL(fmt.Sprintf("https://www.google.com/maps/search/?api=1&query=%s,%s", park.Latitude, park.Longitude)) } target="blank" class="do-not-prerender absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 md:rounded-2xl transition-opacity cursor-pointer flex justify-center items-center">
@@ -152,7 +152,7 @@ templ parkInfo(park api.Park, placeName string, alerts []api.Alert) {
 				</a>
 				<div class="block flex-grow flex flex-col items-center mx-2 text-center">
 					<span
-						class="distance md:text-sm text-xs text-nowrap font-extrabold mb-2"
+						class="distance md:text-lg text-xs text-nowrap font-bold mb-2"
 						distance-mi={ park.DrivingDistanceMi }
 						distance-km={ park.DrivingDistanceKm }
 					></span>
@@ -165,7 +165,7 @@ templ parkInfo(park api.Park, placeName string, alerts []api.Alert) {
 							<g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M21.886 5.536A1.002 1.002 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13a.998.998 0 0 0 1.644 0l9-13a.998.998 0 0 0 .064-1.033zM12 17.243 4.908 7h14.184L12 17.243z"></path></g>
 						</svg>
 					</div>
-					<span class="md:text-sm text-xs text-nowrap font-extrabold mt-2">
+					<span class="md:text-lg text-xs text-nowrap font-bold mt-2">
 						if park.DriveTime != "" {
 							{ park.DriveTime + " hr" }
 						} else {
@@ -173,7 +173,7 @@ templ parkInfo(park api.Park, placeName string, alerts []api.Alert) {
 						}
 					</span>
 				</div>
-				<div class="text-center font-bold md:text-lg">
+				<div class="text-center md:text-lg">
 					<span>{ trimParkName(park.FullName) }</span>
 				</div>
 			</div>

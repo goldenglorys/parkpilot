@@ -352,9 +352,9 @@ func main() {
 			if err != nil {
 				return c.String(http.StatusInternalServerError, err.Error())
 			}
-			// sort placeParks by driving distance
+			// sort placeParks by Haversine distance, just in case
 			sort.Slice(placeParks, func(i, j int) bool {
-				return placeParks[i].GetFloat("drivingDistanceKm") < placeParks[j].GetFloat("drivingDistanceKm")
+				return placeParks[i].GetFloat("haversineDistance") < placeParks[j].GetFloat("haversineDistance")
 			})
 			// get the next 4 closest parks
 			if len(placeParks) >= currentCount+4 {
@@ -401,6 +401,7 @@ func main() {
 					placePark := models.NewRecord(placeParks)
 					placePark.Set("place", placeRecord.Id)
 					placePark.Set("park", park.ParkRecordId)
+					placePark.Set("haversineDistance", park.HaversineDistance)
 					placePark.Set("drivingDistanceMi", park.DrivingDistanceMi)
 					placePark.Set("drivingDistanceKm", park.DrivingDistanceKm)
 					placePark.Set("driveTime", park.DriveTime)

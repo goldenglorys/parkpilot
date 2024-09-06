@@ -92,7 +92,7 @@ templ campgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 						<p class={ "dark:text-amber-50 text-amber-700 font-bold text-xl", templ.KV("text-green-700", campground.FirstComeFirstServe != "0") }>{ strings.ToUpper(campground.Name) }</p>
 						<p class="dark:text-amber-50 text-sm mb-2">{ campground.Description }...</p>
 						if campground.FirstComeFirstServe != "0" {
-							<p class="dark:text-lime-500 text-lime-700 font-bold text-xs">has first-come-first-serve spots</p>
+							<p class="dark:text-lime-500 text-lime-700 font-bold text-xs">has first-come-first-served spots</p>
 						} else {
 							<p class="dark:text-amber-500 text-amber-700 font-bold text-xs">reservations required</p>
 						}

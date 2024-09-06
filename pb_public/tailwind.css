@@ -1096,6 +1096,10 @@ label {
   margin-top: 0.5rem;
 }
 
+.mt-24 {
+  margin-top: 6rem;
+}
+
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1271,6 +1275,10 @@ label {
 .max-w-fit {
   max-width: -moz-fit-content;
   max-width: fit-content;
+}
+
+.max-w-none {
+  max-width: none;
 }
 
 .flex-grow {
@@ -1610,10 +1618,6 @@ label {
   padding-bottom: 0.5rem;
 }
 
-.pl-16 {
-  padding-left: 4rem;
-}
-
 .pt-12 {
   padding-top: 3rem;
 }
@@ -1686,11 +1690,6 @@ label {
 .text-fuchsia-800 {
   --tw-text-opacity: 1;
   color: rgb(134 25 143 / var(--tw-text-opacity));
-}
-
-.text-gray-700 {
-  --tw-text-opacity: 1;
-  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
 .text-green-700 {
@@ -2102,6 +2101,10 @@ label {
     flex-direction: row;
   }
 
+  .md\:justify-center {
+    justify-content: center;
+  }
+
   .md\:gap-3 {
     gap: 0.75rem;
   }
@@ -2126,11 +2129,6 @@ label {
   .md\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
-  }
-
-  .md\:text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
   }
 
   .md\:text-xl {
@@ -2292,6 +2290,11 @@ label {
 .dark\:text-red-100:where(.dark, .dark *) {
   --tw-text-opacity: 1;
   color: rgb(254 226 226 / var(--tw-text-opacity));
+}
+
+.dark\:text-stone-200:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(231 229 228 / var(--tw-text-opacity));
 }
 
 .dark\:text-stone-300:where(.dark, .dark *) {
