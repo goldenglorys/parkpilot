@@ -44,12 +44,6 @@ func main() {
 		log.Fatal("OWM_API_KEY environment variable is not set")
 	}
 
-	app.OnBeforeApiError().Add(func(e *core.ApiErrorEvent) error {
-		log.Println("API Error:", e.Error)
-		// send error code and message to error template
-		return template.Html(e.HttpContext, components.Error(404, e.Error.Error()))
-	})
-
 	// serves static files from the provided public dir (if exists)
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		template.NewTemplateRenderer(e.Router)

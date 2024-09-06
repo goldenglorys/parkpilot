@@ -25,7 +25,7 @@ go.work.sum
 .env
 
 /pb_data
-/pb_public
 *_templ.go
 main
 build-errors.log
+/node_modules
