@@ -66,8 +66,7 @@ templ CampgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 				</svg>
 			</button>
 			<div class="flex flex-row justify-center flex-wrap gap-3">
-				<h1 id="main-title" class="dark:text-amber-100 text-4xl md:text-5xl text-center my-auto text-stone-700 font-extrabold">{ trimParkName(park.FullName) + " Campsites" }</h1>
-				<span class="text-xl text-center self-end mb-0.5 text-stone-500 font-bold">{ park.States }</span>
+				<h1 id="main-title" class="dark:text-amber-100 text-4xl md:text-5xl text-center my-auto text-stone-700 font-black">{ trimParkName(park.FullName) + " Campsites" }</h1> <span class="text-xl text-center self-end mb-0.5 text-stone-500 font-bold">{ park.States }</span>
 			</div>
 			<button onclick="share();" class="my-auto hidden md:block">
 				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="dark:bg-lime-950 dark:hover:bg-lime-900 dark:text-white text-lime-700 fill-none shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100" stroke="currentColor">
