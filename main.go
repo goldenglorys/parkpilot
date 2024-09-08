@@ -19,6 +19,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/cron"
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -43,6 +44,41 @@ func main() {
 	if owmApikey == "" {
 		log.Fatal("OWM_API_KEY environment variable is not set")
 	}
+
+	// capture console commands to update data manually
+	app.RootCmd.AddCommand(&cobra.Command{
+		Use: "update-parks",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := api.FetchAndStoreNationalParks(app)
+			if err != nil {
+				log.Println("Error fetching National Parks data:", err)
+			} else {
+				log.Println("National Parks data updated!")
+			}
+		},
+	})
+	app.RootCmd.AddCommand(&cobra.Command{
+		Use: "update-weather",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := api.FetchAndStoreWeather(app)
+			if err != nil {
+				log.Println("Error fetching Weather data:", err)
+			} else {
+				log.Println("Weather data updated!")
+			}
+		},
+	})
+	app.RootCmd.AddCommand(&cobra.Command{
+		Use: "update-alerts",
+		Run: func(cmd *cobra.Command, args []string) {
+			err := api.FetchAlerts(app)
+			if err != nil {
+				log.Println("Error fetching Alerts data:", err)
+			} else {
+				log.Println("Alerts data updated!")
+			}
+		},
+	})
 
 	// serves static files from the provided public dir (if exists)
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
@@ -157,8 +193,8 @@ func main() {
 				for _, campgroundRecord := range campgroundRecords {
 					var campground api.Campground
 					campground.Name = campgroundRecord.GetString("name")
-					if len(campgroundRecord.GetString("description")) > 100 {
-						campground.Description = campgroundRecord.GetString("description")[0:100]
+					if len(campgroundRecord.GetString("description")) > 150 {
+						campground.Description = campgroundRecord.GetString("description")[0:150]
 					} else {
 						campground.Description = campgroundRecord.GetString("description")
 					}
