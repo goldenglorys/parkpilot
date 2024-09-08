@@ -144,8 +144,8 @@ templ body(component templ.Component) {
 
 		// Load settings from local storage
 		if (typeof(darkMode) === 'undefined' || typeof(units) === 'undefined'){
-			const darkMode = localStorage.getItem('darkMode') === 'false';
-			const units = localStorage.getItem('units') === 'true';
+			const darkMode = localStorage.getItem('darkMode') === 'true';
+			const units = localStorage.getItem('units') === 'false';
 			if (darkMode) document.documentElement.classList.add('dark');
 			document.getElementById('darkModeToggle').checked = darkMode;
 			document.getElementById('unitToggle').checked = !units;
