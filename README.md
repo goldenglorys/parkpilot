@@ -51,6 +51,12 @@ Parkpilot is a Go-based web application designed to help users quickly choose a 
     - National Park Service API: Provides park data and images
     - OpenWeatherMap API: Supplies real-time weather information
     - Mapbox API: Used for geolocation services
+      
+<img width="783" alt="Screenshot 2024-09-08 at 15 25 47" src="https://github.com/user-attachments/assets/c7c23a3e-7fca-4e73-8048-773e49d8c120">
+
+--------
+
+<img width="1245" alt="Screenshot 2024-09-08 at 15 48 11" src="https://github.com/user-attachments/assets/75200311-900e-4ba3-9bb6-2f115d06eb38">
 
 ### Data Flow
 
@@ -62,6 +68,12 @@ Parkpilot is a Go-based web application designed to help users quickly choose a 
 6. Frontend renders the park options using templ and HTMX
 7. User selects a park
 8. Additional park details are fetched and displayed
+   
+![chrome-capture-2024-9-8](https://github.com/user-attachments/assets/ad7b752f-a414-497d-850e-f8cc6266767a)
+
+--------
+
+![chrome-capture-2024-9-8 (1)](https://github.com/user-attachments/assets/94739bf5-ffa9-4675-8188-456f977b0c5f)
 
 ### Future Expansion
 While the current version focuses on US National Parks, the project has the potential to include national parks worldwide. The main challenge for global expansion is the task of accumulating and consolidating data for the approximately 6,555 national parks worldwide (according to the web).
