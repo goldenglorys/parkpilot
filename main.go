@@ -260,8 +260,12 @@ func main() {
 					parks = append(parks, park)
 				}
 				// return all info from DB
-				c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
-				return template.Html(c, components.Index(mapboxAccessToken, parks, placeName, stateName))
+				if c.Request().Header.Get("hx-request") == "true" {
+					c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
+					return template.Html(c, components.Parks(parks, placeName, stateName))
+				} else {
+					return template.Html(c, components.Index(mapboxAccessToken, parks, placeName, stateName))
+				}
 			} else {
 				// get all records from parks collection
 				records, err := app.Dao().FindRecordsByExpr("parks", nil)
@@ -327,8 +331,12 @@ func main() {
 						return err
 					}
 				}
-				c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
-				return template.Html(c, components.Index(mapboxAccessToken, parks, placeName, stateName))
+				if c.Request().Header.Get("hx-request") == "true" {
+					c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
+					return template.Html(c, components.Parks(parks, placeName, stateName))
+				} else {
+					return template.Html(c, components.Index(mapboxAccessToken, parks, placeName, stateName))
+				}
 			}
 		})
 
