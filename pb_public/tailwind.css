@@ -1009,6 +1009,10 @@ label {
   z-index: 50;
 }
 
+.m-5 {
+  margin: 1.25rem;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -1056,10 +1060,6 @@ label {
   margin-bottom: 0.5rem;
 }
 
-.mb-24 {
-  margin-bottom: 6rem;
-}
-
 .mb-3 {
   margin-bottom: 0.75rem;
 }
@@ -1070,6 +1070,10 @@ label {
 
 .mb-8 {
   margin-bottom: 2rem;
+}
+
+.mb-96 {
+  margin-bottom: 24rem;
 }
 
 .ml-2 {
@@ -1106,6 +1110,10 @@ label {
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 
 .block {
@@ -1176,12 +1184,8 @@ label {
   height: 100%;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
-.min-h-96 {
-  min-height: 24rem;
+.min-h-screen {
+  min-height: 100vh;
 }
 
 .w-10 {
@@ -1314,6 +1318,10 @@ label {
   flex-wrap: wrap;
 }
 
+.items-end {
+  align-items: flex-end;
+}
+
 .items-center {
   align-items: center;
 }
@@ -1442,6 +1450,11 @@ label {
   border-color: rgb(134 239 172 / var(--tw-border-opacity));
 }
 
+.border-lime-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(101 163 13 / var(--tw-border-opacity));
+}
+
 .border-lime-700 {
   --tw-border-opacity: 1;
   border-color: rgb(77 124 15 / var(--tw-border-opacity));
@@ -1527,6 +1540,11 @@ label {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.bg-yellow-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 249 195 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-0 {
   --tw-bg-opacity: 0;
 }
@@ -1549,6 +1567,10 @@ label {
 
 .fill-stone-700 {
   fill: #44403c;
+}
+
+.fill-white {
+  fill: #fff;
 }
 
 .stroke-current {
@@ -1801,6 +1823,12 @@ label {
   transition-duration: 150ms;
 }
 
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .duration-300 {
   transition-duration: 300ms;
 }
@@ -1824,14 +1852,18 @@ label {
 /* define animations for the old and new content */
 
 ::view-transition-old(smooth-fade) {
-  animation: 150ms linear both fade-out;
+  animation: 0ms ease-out both fade-out;
 }
 
 ::view-transition-new(smooth-fade) {
-  animation: 150ms linear 30ms both fade-in;
+  animation: 250ms ease-out 50ms both fade-in;
 }
 
-.htmx {
+::view-transition-group(*) {
+  animation: none;
+}
+
+#main {
   view-transition-name: smooth-fade;
 }
 
@@ -1932,6 +1964,7 @@ label {
 .mapboxgl-scroll-zoom-blocker,
 .mapboxgl-touch-pan-blocker {
   transition-delay: 0s !important;
+  transition: opacity 0.25s ease-in-out !important;
 }
 
 .geocoder {
@@ -2019,9 +2052,23 @@ label {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.group:hover .group-hover\:scale-105 {
+  --tw-scale-x: 1.05;
+  --tw-scale-y: 1.05;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.group:hover .group-hover\:border-2 {
+  border-width: 2px;
+}
+
 .group:hover .group-hover\:bg-red-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(153 27 27 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:font-bold {
+  font-weight: 700;
 }
 
 .group:hover .group-hover\:text-white {

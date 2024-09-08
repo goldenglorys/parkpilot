@@ -14,7 +14,7 @@ templ PageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 		</div>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString(mapboxAccessToken) }/>
 	</div>
-	<div id="parks-container" class="text-center min-h-96">
+	<div id="parks-container" class="text-center">
 		@Parks(parks, placeName, state)
 	</div>
 	<script>
@@ -154,6 +154,7 @@ templ PageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 	})();
 	// update the currentCount in load more button
 	document.addEventListener('htmx:configRequest', function(event) {
+		// ADD CHECK ON HX-PRELOAD HEADER-- MODIFY HTMX-PRELOAD.JS
 		let currentCount = document.querySelectorAll('#parks .park-card').length;
 		let url = event.detail.path 
 		// if the hx-get url is load-more-parks, add currentCount to the url
@@ -161,7 +162,9 @@ templ PageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 			if (typeof currentCount !== 'undefined' && window.location.pathname.startsWith('/place/')) {
     			if (currentCount >= 32 || currentCount == 0) {
     				// hide the button
-    				document.getElementById('load-more-parks').style.display = 'none';
+    				if (!event.detail.headers['HX-Preload']) {
+                        document.getElementById('load-more-parks').style.display = 'none';
+                    }
     			}
     		}
 			event.detail.parameters.currentCount = currentCount;

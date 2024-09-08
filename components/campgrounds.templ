@@ -78,10 +78,11 @@ templ CampgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 	</div>
 	<!-- mapbox map with all campgrounds -->
 	<div class="max-w-3xl mx-5 mb-8 md:mx-auto h-96 rounded-2xl bg-stone-200" id="map" data-markers={ campToJSON(campgrounds) } data-lat={ park.Latitude } data-lon={ park.Longitude }></div>
-	<div class="flex flex-col items-center gap-4 mb-24">
+	<div class="flex flex-col items-center gap-4 mb-12">
 		<div class="max-w-3xl mx-auto">
 			for _, campground := range campgrounds {
 				<a
+					hx-boost="false"
 					preload
 					preload-images="true"
 					href={ templ.SafeURL(fmt.Sprintf("/campground/%s", campground.Id)) }
@@ -154,7 +155,8 @@ templ CampgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 				const bounds = coords.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coords[0], coords[0]));
 				map.fitBounds(bounds, { padding: 75 });
 			} else if (coords.length === 1) {
-				map.flyTo({ center: coords[0] });
+				map.setCenter(coords[0]);
+				map.setZoom(14);
 			}
 		}
 

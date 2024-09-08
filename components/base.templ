@@ -24,6 +24,7 @@ templ head(title string) {
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
 		<link rel="manifest" crossorigin="use-credentials" href="/manifest.json"/>
 		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#4d7c0f"/>
+		<script src="/preload.js"></script>
 		<script defer src="https://cloud.umami.is/script.js" data-website-id="66465c10-c517-4d2a-9475-e11db838b937"></script>
 		<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 		<title>{ title }</title>
@@ -31,7 +32,7 @@ templ head(title string) {
 }
 
 templ body(component templ.Component) {
-	<body id="htmx-body" hx-boost="true" hx-target="#main" hx-swap="innerHTML show:#htmx-body:top transition:true" hx-ext="preload" class="mx-auto w-full relative bg-white dark:bg-stone-900">
+	<body id="htmx-body" hx-boost="true" hx-target="#main" hx-swap="innerHTML show:#htmx-body:top transition:true" hx-ext="preload" class="min-h-screen flex flex-col mx-auto w-full bg-white dark:bg-stone-900">
 		<div id="top-bar" class="dark:bg-stone-900 fixed top-0 left-0 w-full bg-white shadow-md transition-opacity duration-300 opacity-0 invisible z-50">
 			<div class="flex items-center justify-between max-w-7xl mx-auto px-4 py-4">
 				<div class="flex items-center absolute left-1/2 transform -translate-x-1/2">
@@ -43,7 +44,7 @@ templ body(component templ.Component) {
 							<g id="SVGRepo_iconCarrier"><path d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z"></path> </g>
 						</svg>
 					</button>
-					<a href="/" hx-target="#htmx-body" class="block">
+					<a href="/" hx-target="#htmx-body" hx-swap="transition:false" class="block">
 						<img class="w-10 h-10 max-w-none" src="/logo.webp" alt="National Parks Finder logo"/>
 					</a>
 					<button onclick="share();" class="ml-8">
@@ -105,19 +106,19 @@ templ body(component templ.Component) {
 			</div>
 		</div>
 		<div class="flex justify-center pt-12">
-			<a href="/" hx-target="#htmx-body" class="logo block">
+			<a href="/" hx-target="#htmx-body" hx-swap="transition:false" class="logo block">
 				<img src="/logo.webp" alt="National Parks Finder logo" class="w-36 h-36"/>
 			</a>
 		</div>
 		<div>
 			<div class="loading-bar"></div>
-			<div id="main" class="main" hx-indicator=".loading-bar" hx-history-elt>
+			<div id="main" class="main flex-grow" hx-indicator=".loading-bar" hx-history-elt>
 				@component
 			</div>
 		</div>
-		<footer>
-			<a href="https://gloryolusola.com/" rel="noopener" class="group flex flex-col justify-center items-center mt-32 h-16 bg-amber-100 text-stone-600 dark:bg-stone-800 dark:text-stone-200">
-				<span class="text-xs">made with ❤️ by <span class="text-amber-700 dark:text-amber-200 group-hover:underline">gloryolusola.com</span></span>
+		<footer class="self-end mt-auto w-full">
+			<a href="https://gloryolusola.com/" rel="noopener" class="group flex flex-col justify-center items-center mt-32 h-20 bg-yellow-100 text-stone-600 dark:bg-stone-800 dark:text-stone-200">
+				<span class="text-sm">made with ❤️ by <span class="text-amber-700 dark:text-amber-200 group-hover:underline group-hover:font-bold">gloryolusola.com</span></span>
 			</a>
 		</footer>
 	</body>

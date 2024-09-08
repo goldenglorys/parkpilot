@@ -51,13 +51,16 @@
 
 /* define animations for the old and new content */
 ::view-transition-old(smooth-fade) {
-  animation: 150ms linear both fade-out;
+  animation: 0ms ease-out both fade-out;
 }
 ::view-transition-new(smooth-fade) {
-  animation: 150ms linear 30ms both fade-in;
+  animation: 250ms ease-out 50ms both fade-in;
+}
+::view-transition-group(*) {
+  animation: none;
 }
 
-.htmx {
+#main {
   view-transition-name: smooth-fade;
 }
 
@@ -158,6 +161,7 @@
 .mapboxgl-scroll-zoom-blocker,
 .mapboxgl-touch-pan-blocker {
   transition-delay: 0s !important;
+  transition: opacity 0.25s ease-in-out !important;
 }
 
 .geocoder {

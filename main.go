@@ -87,6 +87,10 @@ func main() {
 		// set to ./pb_public when running locally
 		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("pb_public"), false))
 
+		app.OnBeforeApiError().Add(func(e *core.ApiErrorEvent) error {
+			return template.Html(e.HttpContext, components.Error(e.Error))
+		})
+
 		e.Router.GET("/", func(c echo.Context) error {
 			parks := []api.Park{}
 			placeName := ""
@@ -165,8 +169,8 @@ func main() {
 					}
 				}
 
-				// if contains hx-request header:
-				if c.Request().Header.Get("hx-request") == "true" {
+				// if contains HX-Request header:
+				if c.Request().Header.Get("HX-Request") == "true" {
 					return template.Html(c, components.ParkInfo(park, placeName, alerts))
 				} else {
 					return template.Html(c, components.Park(park, placeName, alerts))
@@ -212,8 +216,8 @@ func main() {
 					ParkRecordId: parkRecord.Id,
 					ParkCode:     parkCode,
 				}
-				// if contains hx-request header:
-				if c.Request().Header.Get("hx-request") == "true" {
+				// if contains HX-Request header:
+				if c.Request().Header.Get("HX-Request") == "true" {
 					return template.Html(c, components.CampgroundsInfo(park, campgrounds, mapboxAccessToken))
 				} else {
 					return template.Html(c, components.Campgrounds(park, campgrounds, mapboxAccessToken))
@@ -251,14 +255,14 @@ func main() {
 				campground.ParkCode = park.GetString("parkCode")
 				parkName := park.GetString("name")
 				Id := campgroundRecord.Id
-				// if contains hx-request header:
-				if c.Request().Header.Get("hx-request") == "true" {
+				// if contains HX-Request header:
+				if c.Request().Header.Get("HX-Request") == "true" {
 					return template.Html(c, components.CampgroundInfo(campground, parkName, Id))
 				} else {
 					return template.Html(c, components.Campground(campground, parkName, Id))
 				}
 			}
-			return template.Html(c, components.Error(404, "Campground not found"))
+			return c.Redirect(http.StatusFound, "/")
 		})
 
 		e.Router.GET("/place/:placeName/:stateName", func(c echo.Context) error {
@@ -296,7 +300,7 @@ func main() {
 					parks = append(parks, park)
 				}
 				// return all info from DB
-				if c.Request().Header.Get("hx-request") == "true" {
+				if c.Request().Header.Get("HX-Request") == "true" {
 					c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
 					return template.Html(c, components.Parks(parks, placeName, stateName))
 				} else {
@@ -367,7 +371,7 @@ func main() {
 						return err
 					}
 				}
-				if c.Request().Header.Get("hx-request") == "true" {
+				if c.Request().Header.Get("HX-Request") == "true" {
 					c.Response().Header().Set("HX-Push-Url", "/place/"+placeName+"/"+stateName)
 					return template.Html(c, components.Parks(parks, placeName, stateName))
 				} else {
