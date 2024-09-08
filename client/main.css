@@ -57,8 +57,7 @@
   animation: 150ms linear 30ms both fade-in;
 }
 
-/* tie the view transition to a given CSS class */
-.htmx-body {
+.htmx {
   view-transition-name: smooth-fade;
 }
 

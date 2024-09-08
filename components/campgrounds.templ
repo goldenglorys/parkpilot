@@ -8,7 +8,7 @@ import (
 )
 
 templ Campgrounds(park api.Park, campgrounds []api.Campground, mapboxAccessToken string) {
-	@Page(park.FullName+" | Campsites", campgroundsInfo(park, campgrounds, mapboxAccessToken))
+	@Page(park.FullName+" | Campsites", CampgroundsInfo(park, campgrounds, mapboxAccessToken))
 }
 
 // get JSON for mapbox from campgrounds
@@ -34,8 +34,8 @@ func campToJSON(campgrounds []api.Campground) string {
 	return "[" + strings.Join(features, ",") + "]"
 }
 
-templ campgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessToken string) {
-	<div class="flex flex-col items-center justify-center pt-12 md:mb-8 mb-4 gap-4">
+templ CampgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessToken string) {
+	<div class="flex flex-col items-center justify-center pt-12 mb-4 gap-4">
 		<a href="/" hx-boost="false" class="block">
 			<img src="/logo.webp" alt="National Parks Finder logo" class="w-36 h-36"/>
 		</a>
@@ -57,7 +57,7 @@ templ campgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 					</svg>
 				</button>
 			</div>
-			<button onclick="history.back()" class="my-auto hidden md:block backBtn">
+			<button onclick="history.back()" class="my-auto hidden md:block backBtn mobile">
 				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="dark:bg-lime-950 dark:fill-white dark:hover:bg-lime-900 fill-lime-700 shadow-md h-12 w-12 border border-lime-700 rounded-xl align-middle p-1 hover:bg-lime-100">
 					<title>Back</title>
 					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -83,8 +83,9 @@ templ campgroundsInfo(park api.Park, campgrounds []api.Campground, mapboxAccessT
 		<div class="max-w-3xl mx-auto">
 			for _, campground := range campgrounds {
 				<a
+					preload
+					preload-images="true"
 					href={ templ.SafeURL(fmt.Sprintf("/campground/%s", campground.Id)) }
-					hx-boost="false"
 					id={ fmt.Sprintf("camp-%s", campground.Id) }
 					class={ "dark:bg-opacity-10 dark:bg-amber-500 dark:border-amber-600 dark:hover:bg-opacity-20 hover:bg-amber-200 border border-amber-300 mx-5 flex justify-between items-center p-4 rounded-2xl mb-4 cursor-pointer group bg-amber-100", templ.KV("dark:bg-green-500 dark:border-green-500 border-green-300 hover:bg-green-200 bg-green-100", campground.FirstComeFirstServe != "0") }
 				>

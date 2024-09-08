@@ -129,7 +129,12 @@ func main() {
 					}
 				}
 
-				return template.Html(c, components.Park(park, placeName, alerts))
+				// if contains hx-request header:
+				if c.Request().Header.Get("hx-request") == "true" {
+					return template.Html(c, components.ParkInfo(park, placeName, alerts))
+				} else {
+					return template.Html(c, components.Park(park, placeName, alerts))
+				}
 			} else {
 				// Redirect to home page if park not found
 				return c.Redirect(http.StatusFound, "/")
@@ -171,7 +176,12 @@ func main() {
 					ParkRecordId: parkRecord.Id,
 					ParkCode:     parkCode,
 				}
-				return template.Html(c, components.Campgrounds(park, campgrounds, mapboxAccessToken))
+				// if contains hx-request header:
+				if c.Request().Header.Get("hx-request") == "true" {
+					return template.Html(c, components.CampgroundsInfo(park, campgrounds, mapboxAccessToken))
+				} else {
+					return template.Html(c, components.Campgrounds(park, campgrounds, mapboxAccessToken))
+				}
 			} else {
 				// redirect to home page if park not found
 				return c.Redirect(http.StatusFound, "/")
@@ -205,7 +215,12 @@ func main() {
 				campground.ParkCode = park.GetString("parkCode")
 				parkName := park.GetString("name")
 				Id := campgroundRecord.Id
-				return template.Html(c, components.Campground(campground, parkName, Id))
+				// if contains hx-request header:
+				if c.Request().Header.Get("hx-request") == "true" {
+					return template.Html(c, components.CampgroundInfo(campground, parkName, Id))
+				} else {
+					return template.Html(c, components.Campground(campground, parkName, Id))
+				}
 			}
 			return template.Html(c, components.Error(404, "Campground not found"))
 		})
@@ -307,6 +322,7 @@ func main() {
 					placePark.Set("drivingDistanceMi", park.DrivingDistanceMi)
 					placePark.Set("drivingDistanceKm", park.DrivingDistanceKm)
 					placePark.Set("driveTime", park.DriveTime)
+					placePark.Set("haversineDistance", park.HaversineDistance)
 					if err := app.Dao().SaveRecord(placePark); err != nil {
 						return err
 					}
@@ -431,8 +447,8 @@ func main() {
 			}
 			log.Println("National Parks data fetched and stored!")
 		})
-		// update weather data every 4 hours
-		scheduler.MustAdd("updateWeather", "0 */4 * * *", func() {
+		// update weather data every 4 hours, at 10 minutes past the hour
+		scheduler.MustAdd("updateWeather", "10 */4 * * *", func() {
 			log.Println("Fetching and storing weather data...")
 			err := api.FetchAndStoreWeather(app)
 			if err != nil {
@@ -441,8 +457,8 @@ func main() {
 			}
 			log.Println("Weather data fetched and stored!")
 		})
-		// update alerts every 24 hours
-		scheduler.MustAdd("updateAlerts", "0 0 * * *", func() {
+		// update alerts every 6 hours, at 15 minutes past the hour
+		scheduler.MustAdd("updateAlerts", "15 */6 * * *", func() {
 			log.Println("Fetching and storing alerts data...")
 			err := api.FetchAlerts(app)
 			if err != nil {

@@ -6,23 +6,18 @@ import (
 )
 
 templ Index(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
-	@Page("Pick A Park!", pageIndex(mapboxAccessToken, parks, placeName, state))
+	@Page("Park Pilotk!", pageIndex(mapboxAccessToken, parks, placeName, state))
 }
 
 templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, state string) {
-	<div class="flex flex-col items-center mx-auto text-center pt-12 md:mb-8 mb-4">
-		<a href="/" hx-boost="false" class="block">
-			<div class="flex flex-col items-center justify-center mx-3 gap-4 md:mb-8 mb-4">
-				<img src="/logo.webp" alt="Pick A Park Logo" class="w-36 h-36"/>
-				<h1 id="main-title" class="dark:text-amber-100 text-4xl md:text-5xl font-extrabold text-stone-700">Park Pilot</h1>
-			</div>
-		</a>
+	<div class="flex flex-col items-center mx-auto text-center pt-4 mb-4">
+		<h1 id="main-title" class="dark:text-amber-100 text-4xl md:text-5xl font-extrabold text-stone-700 md:mb-8 mb-4">Park Pilot</h1>
 		<div class="geocoder rounded bg-stone-100">
 			<div id="geocoder"></div>
 		</div>
 		<input type="hidden" id="mapboxToken" value={ templ.JSONString(mapboxAccessToken) }/>
 	</div>
-	<div id="parks-container" class="text-center">
+	<div id="parks-container" class="text-center min-h-96">
 		@Parks(parks, placeName, state)
 	</div>
 	if len(parks) != 0 {
@@ -32,13 +27,14 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 			hx-target="#parks"
 			hx-swap="beforeend"
 			hx-push-url="false"
-			hx-boost="false"
+			preload
+			preload-images="true"
 			class="block w-64 mx-auto mb-8 py-2 px-4 text-lg text-center font-bold text-white bg-lime-700 rounded-2xl hover:bg-lime-800 cursor-pointer"
 		>
 			Load More
 		</button>
 		<div class="flex justify-center">
-			<p class="dark:text-white max-w-2xl text-sm text-stone-700 text-center mx-8"><sup class="dark:text-lime-400 text-base text-lime-800">*</sup> Parks are sorted by as-the-crow-flies distance from your location, and thus may not be sorted by driving distance exactly.</p>
+			<p class="dark:text-white max-w-2xl text-sm text-stone-700 text-center mx-8"><span class="dark:text-lime-400 text-lime-800">*</span> Parks are sorted by as-the-crow-flies distance from your location, and thus may not be sorted by driving distance exactly.</p>
 		</div>
 	}
 	<script>
@@ -143,15 +139,15 @@ templ pageIndex(mapboxAccessToken string, parks []api.Park, placeName string, st
 	// update the currentCount in load more button
 	document.addEventListener('htmx:configRequest', function(event) {
 		let currentCount = document.querySelectorAll('#parks .park-card').length;
-		if (typeof currentCount !== 'undefined' && window.location.pathname.startsWith('/place/')) {
-			if (currentCount >= 32 || currentCount == 0) {
-				// hide the button
-				document.getElementById('load-more-parks').style.display = 'none';
-			}
-		}
-		// if the hx-get url is load-more-parks, add currentCount to the url
 		let url = event.detail.path 
+		// if the hx-get url is load-more-parks, add currentCount to the url
 		if (url && url.includes('load-more-parks')) {
+			if (typeof currentCount !== 'undefined' && window.location.pathname.startsWith('/place/')) {
+    			if (currentCount >= 32 || currentCount == 0) {
+    				// hide the button
+    				document.getElementById('load-more-parks').style.display = 'none';
+    			}
+    		}
 			event.detail.parameters.currentCount = currentCount;
 		}
 	});

@@ -1096,8 +1096,8 @@ label {
   margin-top: 0.5rem;
 }
 
-.mt-24 {
-  margin-top: 6rem;
+.mt-32 {
+  margin-top: 8rem;
 }
 
 .mt-4 {
@@ -1176,8 +1176,8 @@ label {
   height: 100vh;
 }
 
-.min-h-lvh {
-  min-height: 100lvh;
+.min-h-96 {
+  min-height: 24rem;
 }
 
 .w-10 {
@@ -1622,6 +1622,10 @@ label {
   padding-top: 3rem;
 }
 
+.pt-4 {
+  padding-top: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -1829,9 +1833,7 @@ label {
   animation: 150ms linear 30ms both fade-in;
 }
 
-/* tie the view transition to a given CSS class */
-
-.htmx-body {
+.htmx {
   view-transition-name: smooth-fade;
 }
 
@@ -2203,6 +2205,11 @@ label {
   background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
+.dark\:bg-stone-500:where(.dark, .dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(120 113 108 / var(--tw-bg-opacity));
+}
+
 .dark\:bg-stone-700:where(.dark, .dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(68 64 60 / var(--tw-bg-opacity));
@@ -2250,6 +2257,11 @@ label {
 .dark\:text-amber-100:where(.dark, .dark *) {
   --tw-text-opacity: 1;
   color: rgb(254 243 199 / var(--tw-text-opacity));
+}
+
+.dark\:text-amber-200:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(253 230 138 / var(--tw-text-opacity));
 }
 
 .dark\:text-amber-50:where(.dark, .dark *) {
