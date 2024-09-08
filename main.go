@@ -183,7 +183,7 @@ func main() {
 
 		e.Router.GET("/campgrounds/:parkCode", func(c echo.Context) error {
 			parkCode := c.PathParam("parkCode")
-			parkRecord, err := app.Dao().FindFirstRecordByData("nationalParks", "parkCode", parkCode)
+			parkRecord, err := app.Dao().FindFirstRecordByData("parks", "parkCode", parkCode)
 			if err != nil {
 				return c.String(http.StatusInternalServerError, err.Error())
 			}
@@ -248,7 +248,7 @@ func main() {
 				campground.DirectionsOverview = campgroundRecord.GetString("directionsOverview")
 				campground.Images = campgroundRecord.GetStringSlice("images")
 				campground.WeatherOverview = campgroundRecord.GetString("weatherOverview")
-				park, err := app.Dao().FindRecordById("nationalParks", campgroundRecord.GetString("parkId"))
+				park, err := app.Dao().FindRecordById("parks", campgroundRecord.GetString("parkId"))
 				if err != nil {
 					return c.String(http.StatusInternalServerError, err.Error())
 				}
@@ -388,7 +388,7 @@ func main() {
 				return c.String(http.StatusBadRequest, "Invalid currentCount value")
 			}
 			// get all records from nationalParks collection
-			records, err := app.Dao().FindRecordsByExpr("nationalParks", nil)
+			records, err := app.Dao().FindRecordsByExpr("parks", nil)
 			if err != nil {
 				return c.String(http.StatusInternalServerError, err.Error())
 			}
